@@ -1,45 +1,36 @@
-// Importamos los módulos necesarios
-import next from 'next';
-import { createServer } from 'http';
-import { Server as SocketServer } from 'socket.io';
-// Creamos una instancia del cliente de Prisma
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+const cors = require("cors");
 
-// Definimos si estamos en modo desarrollo o producción
-const dev = process.env.NODE_ENV !== 'production';
-const port = process.env.PORT || 3000;
-// Inicializamos la aplicación Next.js
-const app = next({ dev, port });
+const app = express();
+const server = http.createServer(app);
 
-// Manejador para todas las peticiones HTTP con Next.js
-const handler = app.getRequestHandler();
+// Habilitar CORS en las rutas HTTP normales
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
-// Preparamos la aplicación Next.js
-app.prepare().then(() => {
-    // Creamos el servidor HTTP
-    const httpServer = createServer(handler);
+// Habilitar CORS en WebSockets
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"],
+        credentials: true
+    }
+});
 
-    // Inicializamos el servidor de Socket.io sobre el servidor HTTP
-    const io = new SocketServer(httpServer, {
-        cors: {
-            origin: '*', // Aquí puedes especificar los W permitidos
-            methods: ['GET', 'POST', 'DELETE', 'PUT'],
-        },
+io.on("connection", (socket) => {
+    console.log("Usuario conectado:", socket.id);
+
+    socket.on("sendMessage", (message) => {
+        io.emit("receiveMessage", message);
     });
 
-
-    // Escuchamos cuando un cliente se conecta vía WebSocket
-    io.on('connection', (socket) => {
-        console.log(`socket conectado con id:${socket.id}`);
-
-
-
-        socket.on('disconnect', () => {
-            console.log('socket desconectado 😐');
-        });
+    socket.on("disconnect", () => {
+        console.log("Usuario desconectado:", socket.id);
     });
+});
 
-    httpServer.listen(port, (err) => {
-        if (err) throw err;
-        console.log(`Servidor escuchando en http://localhost:${port}`);
-    });
+server.listen(5000, () => {
+    console.log("Servidor corriendo en http://localhost:5000");
 });

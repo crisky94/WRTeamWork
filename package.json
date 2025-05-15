@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "git:push": "prettier --write . && git add . && git commit -m 'chore: format with prettier' && git push"
+    "git:push": "prettier --write . && git add . && git commit -m 'update' && git push"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.0",

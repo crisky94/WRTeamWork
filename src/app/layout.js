@@ -7,7 +7,7 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-} from '@clerk/nextjs'
+} from "@clerk/nextjs";
 import { ChatProvider } from "@/context/ChatContext";
 
 const geistSans = Geist({
@@ -30,7 +30,9 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <ChatProvider>
         <html lang="en">
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
             <header className="flex justify-end items-center p-4 gap-4 h-16">
               <SignedOut>
                 <SignInButton />
